@@ -1,6 +1,5 @@
-import pg from "pg";
 import "dotenv/config"
-const { Client } = pg;
-const client = new Client();
+import { drizzle } from 'drizzle-orm/node-postgres';
 
-export default client;
+console.log("url: ", process.env.DB_URL);
+export default drizzle(process.env.DB_URL!);
