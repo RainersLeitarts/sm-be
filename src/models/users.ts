@@ -12,3 +12,20 @@ export async function modifyRefreshToken(email: string, refreshToken: string) {
     .set({ refreshToken })
     .where(eq(usersTable.email, email));
 }
+
+export async function findUserByEmail(email: string) {
+  const res = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.email, email));
+  return res?.[0];
+}
+
+export async function findUserByUsername(username: string) {
+  const res = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.username, username));
+
+  return res?.[0];
+}
