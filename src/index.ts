@@ -6,7 +6,7 @@ import routes from "./routes/routes"
 const app = express()
 const PORT = 3000
 
-dotenv.config({ path: ".env" });
+dotenv.config({ path: "../.env" });
 app.use(cors())
 app.use(json())
 app.use(cookieParser())

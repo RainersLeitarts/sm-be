@@ -1,12 +1,17 @@
-import { Request, Response, Router } from "express";
+import e, { Request, Response, Router } from "express";
 import { createPost } from "../models/posts";
 
-const router = Router()
+const router = Router();
 
 router.post("/create", async (req: Request, res: Response) => {
-    await createPost()
-    res.status(201).json({message: "Post created"})
-})
+  try {
+    const { textContent } = req.body;
+    
+    await createPost({ textContent });
+    res.status(201).json({ message: "Post created" });
+  } catch (error) {
+    console.log(error);
+  }
+});
 
-
-export default router
+export default router;
