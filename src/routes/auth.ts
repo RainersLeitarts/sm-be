@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import {
   modifyRefreshToken,
   createUser,
@@ -11,6 +11,11 @@ import {
 const router = Router();
 
 const AUTH_TOKEN_EXPIRATION = "10m";
+
+type TokenPayload = {
+  email: string;
+  username: string;
+};
 
 router.post("/register", async (req: Request, res: Response) => {
   const { email, username, password } = req.body;
@@ -32,13 +37,7 @@ router.post("/register", async (req: Request, res: Response) => {
 
   await createUser({ username, email, password: hashedPass });
 
-  const jwtPayload = { email, username };
-  const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET!, {
-    expiresIn: AUTH_TOKEN_EXPIRATION,
-  });
-  const refreshToken = jwt.sign(jwtPayload, process.env.JWT_REFRESH_SECRET!, {
-    expiresIn: "168d",
-  });
+  const { accessToken, refreshToken } = generateNewTokens(email, username);
 
   await modifyRefreshToken(email, refreshToken);
 
@@ -71,14 +70,10 @@ router.post("/login", async (req: Request, res: Response) => {
     return;
   }
 
-  const jwtPayload = { email: user.email, username };
-
-  const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET!, {
-    expiresIn: AUTH_TOKEN_EXPIRATION,
-  });
-  const refreshToken = jwt.sign(jwtPayload, process.env.JWT_REFRESH_SECRET!, {
-    expiresIn: "168d",
-  });
+  const { accessToken, refreshToken } = generateNewTokens(
+    user.email,
+    user.username
+  );
 
   await modifyRefreshToken(user.email, refreshToken);
 
@@ -88,5 +83,61 @@ router.post("/login", async (req: Request, res: Response) => {
     .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false })
     .json({ message: "User authenticated" });
 });
+
+router.get("/refresh", async (req, res) => {
+  const reqRefreshToken = req.cookies.refreshToken;
+
+  const isValid = jwt.verify(reqRefreshToken, process.env.JWT_REFRESH_SECRET!);
+
+  if (!isValid) {
+    res.status(400).json({ message: "Invalid refresh token" });
+    return;
+  }
+
+  const JWTData = jwt.decode(reqRefreshToken) as
+    | (JwtPayload & TokenPayload)
+    | null;
+
+  if (JWTData === null) {
+    res.status(400).json({ message: "Invalid refresh token" });
+    return;
+  }
+
+  const user = await findUserByUsername(JWTData.username);
+
+  if (user.refreshToken !== reqRefreshToken) {
+    res.status(400).json({ message: "Invalid refresh token" });
+    return;
+  }
+
+  const { accessToken, refreshToken } = generateNewTokens(
+    user.email,
+    user.username
+  );
+
+  await modifyRefreshToken(user.email, refreshToken);
+
+  res
+    .status(200)
+    .cookie("accessToken", accessToken, { httpOnly: true, secure: false })
+    .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false })
+    .json({ message: "Token refreshed" });
+});
+
+function generateNewTokens(email: string, username: string) {
+  const jwtPayload: TokenPayload = { email, username };
+
+  const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET!, {
+    expiresIn: AUTH_TOKEN_EXPIRATION,
+  });
+  const refreshToken = jwt.sign(jwtPayload, process.env.JWT_REFRESH_SECRET!, {
+    expiresIn: "168d",
+  });
+
+  return {
+    accessToken,
+    refreshToken,
+  };
+}
 
 export default router;
