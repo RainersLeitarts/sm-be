@@ -1,7 +1,4 @@
-import { Request, Response, Router } from "express";
-import bcrypt from "bcrypt";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { modifyRefreshToken, findUserByUsername } from "../models/users";
+import { Router } from "express";
 import {
   loginController,
   refreshTokenController,

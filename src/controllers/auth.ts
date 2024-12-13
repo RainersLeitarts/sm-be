@@ -1,11 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  createUser,
-  findUserByEmail,
   findUserByUsername,
   modifyRefreshToken,
 } from "../models/users";
-import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { generateNewTokens } from "../utils/auth";
 import { TokenPayload } from "../types/auth";
