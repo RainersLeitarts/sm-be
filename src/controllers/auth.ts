@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import {
-  findUserByUsername,
-  modifyRefreshToken,
-} from "../models/users";
+import { z } from "zod";
+import { findUserByUsername, modifyRefreshToken } from "../models/users";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { generateNewTokens } from "../utils/auth";
 import { TokenPayload } from "../types/auth";
@@ -14,11 +12,6 @@ export async function registerController(
   next: NextFunction
 ) {
   const { email, username, password } = req.body;
-
-  if (!email || !username || !password) {
-    res.status(400).json({ message: "Invalid or missing credentials" });
-    return;
-  }
 
   try {
     const { accessToken, refreshToken } = await registerUserService(
@@ -43,11 +36,6 @@ export async function loginController(
   next: NextFunction
 ) {
   const { username, password } = req.body;
-
-  if (!username || !password) {
-    res.status(400).json({ message: "Invalid or missing credentials" });
-    return;
-  }
 
   try {
     const { accessToken, refreshToken } = await loginUserService(

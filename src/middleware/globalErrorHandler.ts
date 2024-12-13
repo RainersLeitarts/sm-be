@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
 
 export function globalErrorHandler(
   err: Error,
@@ -14,6 +15,11 @@ export function globalErrorHandler(
       AuthErrorInfo[err.message as keyof typeof AuthErrorInfo];
 
     res.status(code).json({ message });
+    return;
+  }
+
+  if (err instanceof ZodError) {
+    res.status(400).json({ message: "Validation failed", errors: err.errors });
     return;
   }
 
