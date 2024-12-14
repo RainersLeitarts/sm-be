@@ -32,6 +32,7 @@ export enum AuthErrors {
   "INCORRECT_PASSWORD" = "INCORRECT_PASSWORD",
   "NO_ACCESS_TOKEN" = "NO_ACCESS_TOKEN",
   "INVALID_ACCESS_TOKEN" = "INVALID_ACCESS_TOKEN",
+  "ACCESS_TOKEN_EXPIRED" = "ACCESS_TOKEN_EXPIRED",
 }
 
 const AuthErrorInfo: Record<AuthErrors, { message: string; code: number }> = {
@@ -49,10 +50,14 @@ const AuthErrorInfo: Record<AuthErrors, { message: string; code: number }> = {
   },
   [AuthErrors.NO_ACCESS_TOKEN]: {
     message: "No access token provided",
-    code: 400,
+    code: 403,
   },
   [AuthErrors.INVALID_ACCESS_TOKEN]: {
     message: "Invalid access token",
-    code: 400,
+    code: 401,
+  },
+  [AuthErrors.ACCESS_TOKEN_EXPIRED]: {
+    message: "Access token expired",
+    code: 401,
   },
 };

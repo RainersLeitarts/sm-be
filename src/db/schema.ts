@@ -18,7 +18,7 @@ export const userRelations = relations(usersTable, ({ many }) => {
 export const postsTable = pgTable("posts", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   textContent: varchar({ length: 500 }),
-  authorId: integer("author_id"),
+  authorId: integer("author_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   modifiedAt: timestamp("modified_at").defaultNow().notNull(),
 });

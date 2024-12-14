@@ -1,18 +1,10 @@
 import { Request, Response, Router } from "express";
 import { createPost } from "../models/posts";
-import { verifyAccessToken } from "../middleware/authenticateRoute";
+import { verifyAccessToken } from "../middleware/verifyAccessToken";
+import { createPostController } from "../controllers/posts";
 
 const router = Router();
 
-router.post("/create", verifyAccessToken, async (req: Request, res: Response) => {
-  try {
-    const { textContent } = req.body;
-    
-    await createPost({ textContent });
-    res.status(201).json({ message: "Post created" });
-  } catch (error) {
-    console.log(error);
-  }
-});
+router.post("/create", verifyAccessToken, createPostController);
 
 export default router;
