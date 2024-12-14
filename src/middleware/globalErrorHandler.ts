@@ -30,6 +30,8 @@ export enum AuthErrors {
   "EMAIL_TAKEN" = "EMAIL_TAKEN",
   "USERNAME_NOT_FOUND" = "USERNAME_NOT_FOUND",
   "INCORRECT_PASSWORD" = "INCORRECT_PASSWORD",
+  "NO_ACCESS_TOKEN" = "NO_ACCESS_TOKEN",
+  "INVALID_ACCESS_TOKEN" = "INVALID_ACCESS_TOKEN",
 }
 
 const AuthErrorInfo: Record<AuthErrors, { message: string; code: number }> = {
@@ -44,5 +46,13 @@ const AuthErrorInfo: Record<AuthErrors, { message: string; code: number }> = {
   [AuthErrors.INCORRECT_PASSWORD]: {
     message: "Incorrect password",
     code: 401,
+  },
+  [AuthErrors.NO_ACCESS_TOKEN]: {
+    message: "No access token provided",
+    code: 400,
+  },
+  [AuthErrors.INVALID_ACCESS_TOKEN]: {
+    message: "Invalid access token",
+    code: 400,
   },
 };

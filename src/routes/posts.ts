@@ -1,9 +1,10 @@
 import { Request, Response, Router } from "express";
 import { createPost } from "../models/posts";
+import { verifyAccessToken } from "../middleware/authenticateRoute";
 
 const router = Router();
 
-router.post("/create", async (req: Request, res: Response) => {
+router.post("/create", verifyAccessToken, async (req: Request, res: Response) => {
   try {
     const { textContent } = req.body;
     
