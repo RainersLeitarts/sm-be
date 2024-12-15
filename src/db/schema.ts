@@ -1,8 +1,8 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: uuid().defaultRandom().primaryKey(),
   username: varchar({ length: 24 }).notNull().unique(),
   email: varchar({ length: 255 }).notNull().unique(),
   refreshToken: varchar(),
@@ -16,9 +16,9 @@ export const userRelations = relations(usersTable, ({ many }) => {
 });
 
 export const postsTable = pgTable("posts", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: uuid().defaultRandom().primaryKey(),
   textContent: varchar({ length: 500 }),
-  authorId: integer("author_id").notNull(),
+  authorId: uuid("author_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   modifiedAt: timestamp("modified_at").defaultNow().notNull(),
 });
