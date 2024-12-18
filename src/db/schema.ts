@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
@@ -45,7 +45,7 @@ export const commentsTable = pgTable("comments", {
     .notNull()
     .references(() => usersTable.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  modifiedAt: timestamp("modified_at").defaultNow().notNull(),
+  modifiedAt: timestamp("modified_at").defaultNow().$onUpdateFn(() => sql`NOW()`).notNull(),
 });
 
 export const commentsRelations = relations(commentsTable, ({ one }) => {
