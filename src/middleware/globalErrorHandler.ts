@@ -10,11 +10,16 @@ export function globalErrorHandler(
   // TODO: Implement and use a logger middleware here
   console.log("Error:", err.message);
 
-  if (err.message in AuthErrors) {
-    const { code, message } =
-      AuthErrorInfo[err.message as keyof typeof AuthErrorInfo];
+  const specifiedErrorInfo = getSpecifiedErrorInfo(
+    err,
+    AuthErrorInfo,
+    PostErrorInfo
+  );
 
-    res.status(code).json({ message });
+  if (specifiedErrorInfo) {
+    res
+      .status(specifiedErrorInfo.code)
+      .json({ message: specifiedErrorInfo.message });
     return;
   }
 
@@ -26,15 +31,20 @@ export function globalErrorHandler(
   res.status(500).json({ message: err.message });
 }
 
-// function getErrorInfo(err: Error, ...args: (AuthErrors | PostErrors)[]){
-//   if(err.message in args[0])
+function getSpecifiedErrorInfo(
+  err: Error,
+  ...args: (typeof AuthErrorInfo | typeof PostErrorInfo)[]
+): { message: string; code: number } | undefined {
+  const errorInfo = args.find((errCollection) => {
+    if (err.message in errCollection) {
+      return errCollection;
+    }
+  });
 
-//   // args.find(errorCollection => {
-//   //   if(err.message in errorCollection){
-      
-//   //   }
-//   // })
-// }
+  if (!errorInfo) return;
+
+  return errorInfo[err.message as keyof typeof errorInfo];
+}
 
 export enum AuthErrors {
   "EMAIL_TAKEN" = "EMAIL_TAKEN",
@@ -45,7 +55,10 @@ export enum AuthErrors {
   "ACCESS_TOKEN_EXPIRED" = "ACCESS_TOKEN_EXPIRED",
 }
 
-export const AuthErrorInfo: Record<AuthErrors, { message: string; code: number }> = {
+export const AuthErrorInfo: Record<
+  AuthErrors,
+  { message: string; code: number }
+> = {
   [AuthErrors.EMAIL_TAKEN]: {
     message: "User with this email already exists",
     code: 400,
@@ -75,16 +88,19 @@ export const AuthErrorInfo: Record<AuthErrors, { message: string; code: number }
 
 export enum PostErrors {
   "POST_NOT_FOUND" = "POST_NOT_FOUND",
-  "POST_NOT_OWNED_BY_USER" = "USERNAME_NOT_FOUND",
+  "POST_NOT_OWNED_BY_USER" = "POST_NOT_OWNED_BY_USER",
 }
 
-export const PostErrorInfo: Record<PostErrors, { message: string; code: number }> = {
+export const PostErrorInfo: Record<
+  PostErrors,
+  { message: string; code: number }
+> = {
   [PostErrors.POST_NOT_FOUND]: {
     message: "Post not found",
     code: 404,
   },
   [PostErrors.POST_NOT_OWNED_BY_USER]: {
-    message: "Username not found",
+    message: "You don't own this post",
     code: 403,
-  }
+  },
 };
