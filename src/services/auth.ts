@@ -4,9 +4,11 @@ import {
   findUserByUsername,
   modifyRefreshToken,
 } from "../models/users";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { generateNewTokens } from "../utils/auth";
 import { AuthErrors } from "../middleware/globalErrorHandler";
+import { TokenPayload } from "../types/auth";
 
 export async function registerUserService(
   email: string,
@@ -42,6 +44,37 @@ export async function loginUserService(username: string, password: string) {
 
   if (!isMatch) {
     throw new Error(AuthErrors.INCORRECT_PASSWORD);
+  }
+
+  const { accessToken, refreshToken } = generateNewTokens(
+    user.email,
+    user.username
+  );
+
+  await modifyRefreshToken(user.email, refreshToken);
+
+  return { accessToken, refreshToken };
+}
+
+export async function refreshTokenService(reqRefreshToken: string) {
+  const isValid = jwt.verify(reqRefreshToken, process.env.JWT_REFRESH_SECRET!);
+
+  if (!isValid) {
+    throw new Error(AuthErrors.INVALID_REFRESH_TOKEN);
+  }
+
+  const JWTData = jwt.decode(reqRefreshToken) as
+    | (JwtPayload & TokenPayload)
+    | null;
+
+  if (JWTData === null) {
+    throw new Error(AuthErrors.INVALID_REFRESH_TOKEN);
+  }
+
+  const user = await findUserByUsername(JWTData.username);
+
+  if (user.refreshToken !== reqRefreshToken) {
+    throw new Error(AuthErrors.INVALID_REFRESH_TOKEN);
   }
 
   const { accessToken, refreshToken } = generateNewTokens(

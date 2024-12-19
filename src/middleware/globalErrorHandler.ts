@@ -51,8 +51,10 @@ export enum AuthErrors {
   "USERNAME_NOT_FOUND" = "USERNAME_NOT_FOUND",
   "INCORRECT_PASSWORD" = "INCORRECT_PASSWORD",
   "NO_ACCESS_TOKEN" = "NO_ACCESS_TOKEN",
-  "INVALID_ACCESS_TOKEN" = "INVALID_ACCESS_TOKEN",
   "ACCESS_TOKEN_EXPIRED" = "ACCESS_TOKEN_EXPIRED",
+  "INVALID_ACCESS_TOKEN" = "INVALID_ACCESS_TOKEN",
+  "NO_REFRESH_TOKEN" = "NO_REFRESH_TOKEN",
+  "INVALID_REFRESH_TOKEN" = "INVALID_REFRESH_TOKEN",
 }
 
 export const AuthErrorInfo: Record<
@@ -83,6 +85,14 @@ export const AuthErrorInfo: Record<
   [AuthErrors.ACCESS_TOKEN_EXPIRED]: {
     message: "Access token expired",
     code: 401,
+  },
+  [AuthErrors.INVALID_REFRESH_TOKEN]: {
+    message: "Invalid refresh token",
+    code: 400,
+  },
+  [AuthErrors.NO_REFRESH_TOKEN]: {
+    message: "No refresh token provided",
+    code: 403,
   },
 };
 

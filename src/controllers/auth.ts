@@ -4,7 +4,12 @@ import { findUserByUsername, modifyRefreshToken } from "../models/users";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { generateNewTokens } from "../utils/auth";
 import { TokenPayload } from "../types/auth";
-import { loginUserService, registerUserService } from "../services/auth";
+import {
+  loginUserService,
+  refreshTokenService,
+  registerUserService,
+} from "../services/auth";
+import { AuthErrors } from "../middleware/globalErrorHandler";
 
 export async function registerController(
   req: Request,
@@ -53,42 +58,28 @@ export async function loginController(
   }
 }
 
-export async function refreshTokenController(req: Request, res: Response) {
-  const reqRefreshToken = req.cookies.refreshToken;
+export async function refreshTokenController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const reqRefreshToken = req.cookies.refreshToken;
 
-  const isValid = jwt.verify(reqRefreshToken, process.env.JWT_REFRESH_SECRET!);
+    if (!reqRefreshToken) {
+      throw new Error(AuthErrors.NO_REFRESH_TOKEN);
+    }
 
-  if (!isValid) {
-    res.status(400).json({ message: "Invalid refresh token" });
-    return;
+    const { accessToken, refreshToken } = await refreshTokenService(
+      reqRefreshToken
+    );
+
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, { httpOnly: true, secure: false })
+      .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false })
+      .json({ message: "Token refreshed" });
+  } catch (error) {
+    next(error);
   }
-
-  const JWTData = jwt.decode(reqRefreshToken) as
-    | (JwtPayload & TokenPayload)
-    | null;
-
-  if (JWTData === null) {
-    res.status(400).json({ message: "Invalid refresh token" });
-    return;
-  }
-
-  const user = await findUserByUsername(JWTData.username);
-
-  if (user.refreshToken !== reqRefreshToken) {
-    res.status(400).json({ message: "Invalid refresh token" });
-    return;
-  }
-
-  const { accessToken, refreshToken } = generateNewTokens(
-    user.email,
-    user.username
-  );
-
-  await modifyRefreshToken(user.email, refreshToken);
-
-  res
-    .status(200)
-    .cookie("accessToken", accessToken, { httpOnly: true, secure: false })
-    .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false })
-    .json({ message: "Token refreshed" });
 }
