@@ -26,6 +26,16 @@ export function globalErrorHandler(
   res.status(500).json({ message: err.message });
 }
 
+// function getErrorInfo(err: Error, ...args: (AuthErrors | PostErrors)[]){
+//   if(err.message in args[0])
+
+//   // args.find(errorCollection => {
+//   //   if(err.message in errorCollection){
+      
+//   //   }
+//   // })
+// }
+
 export enum AuthErrors {
   "EMAIL_TAKEN" = "EMAIL_TAKEN",
   "USERNAME_NOT_FOUND" = "USERNAME_NOT_FOUND",
@@ -40,6 +50,7 @@ export const AuthErrorInfo: Record<AuthErrors, { message: string; code: number }
     message: "User with this email already exists",
     code: 400,
   },
+  // move this to "UserErrors"
   [AuthErrors.USERNAME_NOT_FOUND]: {
     message: "Username not found",
     code: 404,
@@ -60,4 +71,20 @@ export const AuthErrorInfo: Record<AuthErrors, { message: string; code: number }
     message: "Access token expired",
     code: 401,
   },
+};
+
+export enum PostErrors {
+  "POST_NOT_FOUND" = "POST_NOT_FOUND",
+  "POST_NOT_OWNED_BY_USER" = "USERNAME_NOT_FOUND",
+}
+
+export const PostErrorInfo: Record<PostErrors, { message: string; code: number }> = {
+  [PostErrors.POST_NOT_FOUND]: {
+    message: "Post not found",
+    code: 404,
+  },
+  [PostErrors.POST_NOT_OWNED_BY_USER]: {
+    message: "Username not found",
+    code: 403,
+  }
 };
