@@ -23,7 +23,7 @@ export function globalErrorHandler(
     return;
   }
 
-  res.status(500).json({ message: "Unexpected error" });
+  res.status(500).json({ message: err.message });
 }
 
 export enum AuthErrors {
@@ -35,7 +35,7 @@ export enum AuthErrors {
   "ACCESS_TOKEN_EXPIRED" = "ACCESS_TOKEN_EXPIRED",
 }
 
-const AuthErrorInfo: Record<AuthErrors, { message: string; code: number }> = {
+export const AuthErrorInfo: Record<AuthErrors, { message: string; code: number }> = {
   [AuthErrors.EMAIL_TAKEN]: {
     message: "User with this email already exists",
     code: 400,
