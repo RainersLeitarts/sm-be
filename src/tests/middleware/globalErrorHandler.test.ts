@@ -4,6 +4,8 @@ import {
   AuthErrorInfo,
   AuthErrors,
   globalErrorHandler,
+  PostErrorInfo,
+  PostErrors,
 } from "../../middleware/globalErrorHandler";
 
 describe("Global error handling middleware", () => {
@@ -16,6 +18,14 @@ describe("Global error handling middleware", () => {
       "/api/auth/login",
       (req: Request, res: Response, next: NextFunction) => {
         const error = new Error(AuthErrors.INCORRECT_PASSWORD);
+        next(error);
+      }
+    );
+
+    app.post(
+      "/api/posts/create",
+      (req: Request, res: Response, next: NextFunction) => {
+        const error = new Error(PostErrors.POST_NOT_OWNED_BY_USER);
         next(error);
       }
     );
@@ -39,6 +49,17 @@ describe("Global error handling middleware", () => {
     );
     expect(response.body).toEqual({
       message: AuthErrorInfo[AuthErrors.INCORRECT_PASSWORD].message,
+    });
+  });
+
+  it("Should handle different specified errors, for example, POST_NOT_OWNED_BY_USER", async () => {
+    const response = await request(app).post("/api/posts/create");
+
+    expect(response.status).toBe(
+      PostErrorInfo[PostErrors.POST_NOT_OWNED_BY_USER].code
+    );
+    expect(response.body).toEqual({
+      message: PostErrorInfo[PostErrors.POST_NOT_OWNED_BY_USER].message,
     });
   });
 
