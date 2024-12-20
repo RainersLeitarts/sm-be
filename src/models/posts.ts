@@ -17,6 +17,11 @@ export async function createPost({
   await db.insert(postsTable).values(post);
 }
 
+export async function getPosts() {
+  const res = await db.select().from(postsTable);
+  return res;
+}
+
 export async function getPostById(id: string) {
   const res = await db.select().from(postsTable).where(eq(postsTable.id, id));
   return res?.[0];

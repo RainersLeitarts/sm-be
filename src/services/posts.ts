@@ -2,6 +2,7 @@ import {
   createPost,
   deletePost,
   getPostById,
+  getPosts,
   updatePost,
 } from "../models/posts";
 import { findUserByUsername } from "../models/users";
@@ -17,6 +18,10 @@ export async function createPostService(
   }
 
   await createPost({ textContent, authorId: user.id });
+}
+
+export async function getPostsService() {
+  return await getPosts()
 }
 
 export async function editPostService(

@@ -3,6 +3,7 @@ import {
   createPostService,
   deletePostService,
   editPostService,
+  getPostsService,
 } from "../services/posts";
 
 export async function createPostController(
@@ -54,4 +55,14 @@ export async function deletePostController(
   } catch (error) {
     next(error);
   }
+}
+
+export async function getPostsController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const posts = await getPostsService();
+
+  res.status(200).json(posts);
 }
