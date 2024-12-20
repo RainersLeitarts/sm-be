@@ -1,4 +1,9 @@
-import { createPost, getPostById, updatePost } from "../models/posts";
+import {
+  createPost,
+  deletePost,
+  getPostById,
+  updatePost,
+} from "../models/posts";
 import { findUserByUsername } from "../models/users";
 
 export async function createPostService(
@@ -31,9 +36,29 @@ export async function editPostService(
     throw new Error("USER_NOT_FOUND");
   }
 
-  if(post.authorId !== user.id){
+  if (post.authorId !== user.id) {
     throw new Error("POST_NOT_OWNED_BY_USER");
   }
 
-  await updatePost(post.id, textContent)
+  await updatePost(post.id, textContent);
+}
+
+export async function deletePostService(username: string, postId: string) {
+  const post = await getPostById(postId);
+
+  if (!post) {
+    throw new Error("POST_NOT_FOUND");
+  }
+
+  const user = await findUserByUsername(username);
+
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  if (post.authorId !== user.id) {
+    throw new Error("POST_NOT_OWNED_BY_USER");
+  }
+
+  await deletePost(postId);
 }

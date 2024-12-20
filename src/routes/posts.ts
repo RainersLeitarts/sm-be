@@ -1,11 +1,22 @@
-import { Request, Response, Router } from "express";
-import { createPost } from "../models/posts";
+import { Router } from "express";
 import { verifyAccessToken } from "../middleware/verifyAccessToken";
-import { createPostController, editPostController } from "../controllers/posts";
+import {
+  createPostController,
+  deletePostController,
+  editPostController,
+} from "../controllers/posts";
+import { validateRequestData } from "../middleware/validateRequestData";
+import { deletePostSchema } from "../validation/posts";
 
 const router = Router();
 
 router.post("/create", verifyAccessToken, createPostController);
 router.patch("/edit", verifyAccessToken, editPostController);
+router.delete(
+  "/delete",
+  verifyAccessToken,
+  validateRequestData(deletePostSchema),
+  deletePostController
+);
 
 export default router;

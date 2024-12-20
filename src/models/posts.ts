@@ -30,3 +30,11 @@ export async function updatePost(id: string, textContent: string) {
 
   return res;
 }
+
+export async function deletePost(id: string) {
+  const res = await db
+    .delete(postsTable)
+    .where(eq(postsTable.id, id));
+
+  return res;
+}

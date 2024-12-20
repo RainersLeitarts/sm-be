@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { createPostService, editPostService } from "../services/posts";
+import {
+  createPostService,
+  deletePostService,
+  editPostService,
+} from "../services/posts";
 
 export async function createPostController(
   req: Request,
@@ -23,13 +27,30 @@ export async function editPostController(
   res: Response,
   next: NextFunction
 ) {
-  try {
-    const { postId, textContent } = req.body;
-    const username = req.headers["x-username"] as string;
+  const { postId, textContent } = req.body;
+  const username = req.headers["x-username"] as string;
 
+  try {
     await editPostService(username, postId, textContent);
 
     res.status(201).json({ message: "Post created" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deletePostController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { postId } = req.body;
+  const username = req.headers["x-username"] as string;
+
+  try {
+    await deletePostService(username, postId);
+
+    res.status(200).json({ message: "Post deleted" });
   } catch (error) {
     next(error);
   }
