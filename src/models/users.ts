@@ -6,7 +6,7 @@ export async function createUser(user: typeof usersTable.$inferInsert) {
   await db.insert(usersTable).values(user);
 }
 
-export async function modifyRefreshToken(email: string, refreshToken: string) {
+export async function modifyRefreshToken(email: string, refreshToken: string | null) {
   await db
     .update(usersTable)
     .set({ refreshToken })

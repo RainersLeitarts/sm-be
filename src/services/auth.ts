@@ -86,3 +86,24 @@ export async function refreshTokenService(reqRefreshToken: string) {
 
   return { accessToken, refreshToken };
 }
+
+export async function logoutService(reqRefreshToken: string) {
+  const isValid = jwt.verify(reqRefreshToken, process.env.JWT_REFRESH_SECRET!);
+
+  if (!isValid) {
+    throw new Error(AuthErrors.INVALID_REFRESH_TOKEN);
+  }
+
+  const username = (isValid as JwtPayload & TokenPayload).username
+  const user = await findUserByUsername(username);
+
+  if(!user){
+    throw new Error(AuthErrors.USERNAME_NOT_FOUND)
+  }
+
+  if (user.refreshToken !== reqRefreshToken) {
+    throw new Error(AuthErrors.INVALID_REFRESH_TOKEN);
+  }
+
+  await modifyRefreshToken(user.email, null)
+}

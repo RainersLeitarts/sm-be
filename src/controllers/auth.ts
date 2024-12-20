@@ -6,6 +6,7 @@ import { generateNewTokens } from "../utils/auth";
 import { TokenPayload } from "../types/auth";
 import {
   loginUserService,
+  logoutService,
   refreshTokenService,
   registerUserService,
 } from "../services/auth";
@@ -79,6 +80,30 @@ export async function refreshTokenController(
       .cookie("accessToken", accessToken, { httpOnly: true, secure: false })
       .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false })
       .json({ message: "Token refreshed" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function logoutController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const reqRefreshToken = req.cookies.refreshToken;
+
+    if (!reqRefreshToken) {
+      throw new Error(AuthErrors.NO_REFRESH_TOKEN);
+    }
+
+    await logoutService(reqRefreshToken);
+
+    res
+      .status(200)
+      .clearCookie("accessToken")
+      .clearCookie("refreshToken")
+      .json({ message: "User logged out" });
   } catch (error) {
     next(error);
   }
