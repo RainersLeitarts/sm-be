@@ -3,6 +3,7 @@ import {
   createPostService,
   deletePostService,
   editPostService,
+  getPostService,
   getPostsService,
 } from "../services/posts";
 
@@ -28,13 +29,14 @@ export async function editPostController(
   res: Response,
   next: NextFunction
 ) {
-  const { postId, textContent } = req.body;
+  const { postId } = req.query;
+  const { textContent } = req.body;
   const username = req.headers["x-username"] as string;
 
   try {
-    await editPostService(username, postId, textContent);
+    await editPostService(username, postId as string, textContent);
 
-    res.status(201).json({ message: "Post created" });
+    res.status(201).json({ message: "Post edited" });
   } catch (error) {
     next(error);
   }
@@ -45,11 +47,11 @@ export async function deletePostController(
   res: Response,
   next: NextFunction
 ) {
-  const { postId } = req.body;
+  const { postId } = req.query;
   const username = req.headers["x-username"] as string;
 
   try {
-    await deletePostService(username, postId);
+    await deletePostService(username, postId as string);
 
     res.status(200).json({ message: "Post deleted" });
   } catch (error) {
@@ -62,7 +64,15 @@ export async function getPostsController(
   res: Response,
   next: NextFunction
 ) {
-  const posts = await getPostsService();
+  const { postId } = req.query;
+
+  let posts;
+
+  if (postId && typeof postId === "string") {
+    posts = await getPostService(postId)
+  } else {
+    posts = await getPostsService();
+  }
 
   res.status(200).json(posts);
 }

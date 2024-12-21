@@ -21,7 +21,11 @@ export async function createPostService(
 }
 
 export async function getPostsService() {
-  return await getPosts()
+  return await getPosts();
+}
+
+export async function getPostService(id: string) {
+  return await getPostById(id);
 }
 
 export async function editPostService(
