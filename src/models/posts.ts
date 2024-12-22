@@ -18,7 +18,15 @@ export async function createPost({
 }
 
 export async function getPosts() {
-  const res = await db.select().from(postsTable);
+  const res = await db.query.postsTable.findMany({
+    with: {
+      author: {
+        columns: {
+          username: true,
+        },
+      },
+    },
+  });
   return res;
 }
 
@@ -37,9 +45,7 @@ export async function updatePost(id: string, textContent: string) {
 }
 
 export async function deletePost(id: string) {
-  const res = await db
-    .delete(postsTable)
-    .where(eq(postsTable.id, id));
+  const res = await db.delete(postsTable).where(eq(postsTable.id, id));
 
   return res;
 }
