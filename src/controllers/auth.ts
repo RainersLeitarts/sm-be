@@ -108,3 +108,11 @@ export async function logoutController(
     next(error);
   }
 }
+
+export async function checkController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  res.status(200).json({ loggedIn: true });
+}
