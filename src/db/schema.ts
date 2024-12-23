@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
   id: uuid().defaultRandom().primaryKey(),
@@ -21,6 +21,7 @@ export const postsTable = pgTable("posts", {
   authorId: uuid("author_id")
     .notNull()
     .references(() => usersTable.id),
+  isEdited: boolean("is_edited").default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   modifiedAt: timestamp("modified_at").defaultNow().notNull(),
 });

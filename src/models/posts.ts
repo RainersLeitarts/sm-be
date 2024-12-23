@@ -38,7 +38,7 @@ export async function getPostById(id: string) {
 export async function updatePost(id: string, textContent: string) {
   const res = await db
     .update(postsTable)
-    .set({ textContent })
+    .set({ textContent, isEdited: true })
     .where(eq(postsTable.id, id));
 
   return res;
