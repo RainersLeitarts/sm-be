@@ -30,7 +30,7 @@ export async function registerController(
       .status(201)
       .cookie("accessToken", accessToken, { httpOnly: true, secure: false })
       .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false })
-      .json({ message: "User registered" });
+      .json({ status: "success" });
   } catch (error) {
     next(error);
   }
@@ -53,7 +53,7 @@ export async function loginController(
       .status(200)
       .cookie("accessToken", accessToken, { httpOnly: true, secure: false })
       .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false })
-      .json({ message: "User authenticated" });
+      .json({ status: "success" });
   } catch (error) {
     next(error);
   }
@@ -79,7 +79,7 @@ export async function refreshTokenController(
       .status(200)
       .cookie("accessToken", accessToken, { httpOnly: true, secure: false })
       .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false })
-      .json({ message: "Token refreshed" });
+      .json({ status: "success" });
   } catch (error) {
     next(error);
   }
@@ -103,7 +103,7 @@ export async function logoutController(
       .status(200)
       .clearCookie("accessToken")
       .clearCookie("refreshToken")
-      .json({ message: "User logged out" });
+      .json({ status: "success" });
   } catch (error) {
     next(error);
   }
@@ -114,5 +114,5 @@ export async function checkController(
   res: Response,
   next: NextFunction
 ) {
-  res.status(200).json({ loggedIn: true });
+  res.status(200).json({ status: "success" });
 }

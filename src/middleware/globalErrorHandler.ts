@@ -17,18 +17,27 @@ export function globalErrorHandler(
   );
 
   if (specifiedErrorInfo) {
-    res
-      .status(specifiedErrorInfo.code)
-      .json({ message: specifiedErrorInfo.message });
+    res.status(specifiedErrorInfo.code).json({
+      status: "fail",
+      message: specifiedErrorInfo.message,
+    });
     return;
   }
 
   if (err instanceof ZodError) {
-    res.status(400).json({ message: "Validation failed", errors: err.errors });
+    res.status(400).json({
+      status: "fail",
+      data: {
+        errors: err.errors.map((error) => ({
+          field: error.path[0],
+          message: error.message,
+        })),
+      },
+    });
     return;
   }
 
-  res.status(500).json({ message: err.message });
+  res.status(500).json({ status: "error", message: err.message });
 }
 
 function getSpecifiedErrorInfo(
@@ -103,13 +112,15 @@ export enum PostErrors {
 
 export const PostErrorInfo: Record<
   PostErrors,
-  { message: string; code: number }
+  { status: "fail"; message: string; code: number }
 > = {
   [PostErrors.POST_NOT_FOUND]: {
+    status: "fail",
     message: "Post not found",
     code: 404,
   },
   [PostErrors.POST_NOT_OWNED_BY_USER]: {
+    status: "fail",
     message: "You don't own this post",
     code: 403,
   },

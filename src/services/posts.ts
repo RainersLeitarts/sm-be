@@ -1,3 +1,4 @@
+import { PostErrors } from "../middleware/globalErrorHandler";
 import {
   createPost,
   deletePost,
@@ -25,7 +26,13 @@ export async function getPostsService() {
 }
 
 export async function getPostService(id: string) {
-  return await getPostById(id);
+  const post = await getPostById(id);
+
+  if(!post){
+    throw new Error(PostErrors.POST_NOT_FOUND)
+  }
+
+  return post
 }
 
 export async function editPostService(
@@ -36,7 +43,7 @@ export async function editPostService(
   const post = await getPostById(postId);
 
   if (!post) {
-    throw new Error("POST_NOT_FOUND");
+    throw new Error(PostErrors.POST_NOT_FOUND);
   }
 
   const user = await findUserByUsername(username);

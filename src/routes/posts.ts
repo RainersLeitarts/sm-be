@@ -4,23 +4,29 @@ import {
   createPostController,
   deletePostController,
   editPostController,
+  getPostController,
   getPostsController,
 } from "../controllers/posts";
 import { validateRequestData } from "../middleware/validateRequestData";
-import { deletePostSchema, editPostSchema } from "../validation/posts";
+import {
+  deletePostSchema,
+  editPostSchema,
+  getPostSchema,
+} from "../validation/posts";
 
 const router = Router();
 
 router.get("/", getPostsController);
+router.get("/:id", validateRequestData(getPostSchema), getPostController);
 router.post("/create", verifyAccessToken, createPostController);
 router.patch(
-  "/edit",
+  "/edit/:id",
   verifyAccessToken,
   validateRequestData(editPostSchema),
   editPostController
 );
 router.delete(
-  "/delete",
+  "/delete/:id",
   verifyAccessToken,
   validateRequestData(deletePostSchema),
   deletePostController

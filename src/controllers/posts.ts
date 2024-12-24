@@ -29,12 +29,12 @@ export async function editPostController(
   res: Response,
   next: NextFunction
 ) {
-  const { postId } = req.query;
+  const { id } = req.params;
   const { textContent } = req.body;
   const username = req.headers["x-username"] as string;
 
   try {
-    await editPostService(username, postId as string, textContent);
+    await editPostService(username, id as string, textContent);
 
     res.status(201).json({ message: "Post edited" });
   } catch (error) {
@@ -47,11 +47,11 @@ export async function deletePostController(
   res: Response,
   next: NextFunction
 ) {
-  const { postId } = req.query;
+  const { id } = req.params;
   const username = req.headers["x-username"] as string;
 
   try {
-    await deletePostService(username, postId as string);
+    await deletePostService(username, id as string);
 
     res.status(200).json({ message: "Post deleted" });
   } catch (error) {
@@ -64,15 +64,29 @@ export async function getPostsController(
   res: Response,
   next: NextFunction
 ) {
-  const { postId } = req.query;
+  try {
+    const posts = await getPostsService();
 
-  let posts;
-
-  if (postId && typeof postId === "string") {
-    posts = await getPostService(postId)
-  } else {
-    posts = await getPostsService();
+    res.status(200).json({ status: "success", data: posts });
+  } catch (error) {
+    next(error);
   }
+}
 
-  res.status(200).json(posts);
+export async function getPostController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { id } = req.params;
+
+  try {
+    const post = await getPostService(id as string);
+
+    console.log("post:", post);
+
+    res.status(200).json({ status: "success", data: post });
+  } catch (error) {
+    next(error);
+  }
 }
