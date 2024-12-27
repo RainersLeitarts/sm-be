@@ -1,5 +1,6 @@
 #TODO
 
+- Send tokens in auth headers, maybe
 - Make another column in the posts table "isEdited" to signify if post has been edited
   or check if "createdAt" matched "modifiedAt" when querying
 - Implement body validation schemas for posts and elsewhere

@@ -51,9 +51,15 @@ export async function loginController(
 
     res
       .status(200)
-      .cookie("accessToken", accessToken, { httpOnly: true, secure: false })
-      .cookie("refreshToken", refreshToken, { httpOnly: true, secure: false })
-      .json({ status: "success" });
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: false,
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+      })
+      .json({ status: "success", data: { username } });
   } catch (error) {
     next(error);
   }
