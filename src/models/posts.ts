@@ -94,6 +94,15 @@ export async function getComment(id: string) {
   return res?.[0];
 }
 
+export async function getPostComments(postId: string) {
+  const res = await db
+    .select()
+    .from(commentsTable)
+    .where(eq(commentsTable.postId, postId));
+
+  return res;
+}
+
 export async function updateComment(id: string, textContent: string) {
   await db
     .update(commentsTable)

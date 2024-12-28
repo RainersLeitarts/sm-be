@@ -6,6 +6,7 @@ import {
   deleteCommentController,
   deletePostController,
   editPostController,
+  getPostCommentsController,
   getPostController,
   getPostsController,
   toggleLikeController,
@@ -17,6 +18,7 @@ import {
   deleteCommentSchema,
   deletePostSchema,
   editPostSchema,
+  getPostCommentsSchema,
   getPostSchema,
   likePostSchema,
   updateCommentSchema,
@@ -50,6 +52,11 @@ router.post(
   verifyAccessToken,
   validateRequestData(createCommentSchema),
   createCommentController
+);
+router.get(
+  "/:postId/comments",
+  validateRequestData(getPostCommentsSchema),
+  getPostCommentsController
 );
 router.patch(
   "/:postId/comments/:commentId",

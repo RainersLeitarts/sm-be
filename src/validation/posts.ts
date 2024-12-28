@@ -30,3 +30,7 @@ export const updateCommentSchema = z.object({
 export const deleteCommentSchema = z.object({
   commentId: z.string().uuid({ message: "Invalid UUID" }),
 });
+
+export const getPostCommentsSchema = z.object({
+  postId: z.string().uuid({ message: "Invalid UUID" }),
+});

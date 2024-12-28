@@ -5,6 +5,7 @@ import {
   deleteCommentService,
   deletePostService,
   editPostService,
+  getPostCommentsService,
   getPostService,
   getPostsService,
   toggleLikeService,
@@ -85,9 +86,7 @@ export async function getPostController(
   const { id } = req.params;
 
   try {
-    const post = await getPostService(id as string);
-
-    console.log("post:", post);
+    const post = await getPostService(id);
 
     res.status(200).json({ status: "success", data: post });
   } catch (error) {
@@ -132,6 +131,23 @@ export async function createCommentController(
   }
 }
 
+export async function getPostCommentsController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { postId } = req.params;
+
+  try {
+    const comments = await getPostCommentsService(postId)
+
+    res.status(201).json({ status: "success", data: comments });
+  } catch (error) {
+    next(error);
+  }
+}
+
+
 export async function updateCommentController(
   req: Request,
   res: Response,
@@ -140,8 +156,6 @@ export async function updateCommentController(
   const { commentId } = req.params;
   const { textContent } = req.body;
   const username = req.headers["x-username"] as string;
-
-  console.log(commentId);
 
   try {
     await updateCommentService(username, commentId, textContent);

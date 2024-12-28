@@ -8,6 +8,7 @@ import {
   findLike,
   getComment,
   getPostById,
+  getPostComments,
   getPosts,
   likePost,
   updateComment,
@@ -128,6 +129,18 @@ export async function createCommentService(
   }
 
   await createComment(user.id, post.id, textContent, parentId);
+}
+
+export async function getPostCommentsService(postId: string) {
+  const post = await getPostById(postId);
+
+  if (!post) {
+    throw new Error("POST_NOT_FOUND");
+  }
+
+  const comments = await getPostComments(post.id);
+
+  return comments;
 }
 
 export async function updateCommentService(
