@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
+  foreignKey,
   pgTable,
   timestamp,
   uuid,
@@ -45,21 +46,32 @@ export const postRelations = relations(postsTable, ({ one, many }) => {
   };
 });
 
-export const commentsTable = pgTable("comments", {
-  id: uuid().defaultRandom().primaryKey(),
-  textContent: varchar({ length: 450 }).notNull(),
-  postId: uuid("post_id")
-    .notNull()
-    .references(() => postsTable.id),
-  authorId: uuid("author_id")
-    .notNull()
-    .references(() => usersTable.id),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  modifiedAt: timestamp("modified_at")
-    .defaultNow()
-    .$onUpdateFn(() => sql`NOW()`)
-    .notNull(),
-});
+export const commentsTable = pgTable(
+  "comments",
+  {
+    id: uuid().defaultRandom().primaryKey(),
+    textContent: varchar({ length: 450 }).notNull(),
+    postId: uuid("post_id")
+      .notNull()
+      .references(() => postsTable.id, { onDelete: "cascade" }),
+    authorId: uuid("author_id")
+      .notNull()
+      .references(() => usersTable.id),
+    parentId: uuid("parent_id"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    modifiedAt: timestamp("modified_at")
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => {
+    return {
+      _: foreignKey({
+        columns: [table.parentId],
+        foreignColumns: [table.id],
+      }).onDelete("cascade"),
+    };
+  }
+);
 
 export const commentsRelations = relations(commentsTable, ({ one }) => {
   return {
@@ -71,6 +83,10 @@ export const commentsRelations = relations(commentsTable, ({ one }) => {
       fields: [commentsTable.postId],
       references: [usersTable.id],
     }),
+    parent: one(commentsTable, {
+      fields: [commentsTable.parentId],
+      references: [commentsTable.id],
+    }),
   };
 });
 
@@ -78,14 +94,13 @@ export const likesTable = pgTable("likes", {
   id: uuid().defaultRandom().primaryKey(),
   postId: uuid("post_id")
     .notNull()
-    .references(() => postsTable.id),
+    .references(() => postsTable.id, { onDelete: "cascade" }),
   authorId: uuid("author_id")
     .notNull()
     .references(() => usersTable.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   modifiedAt: timestamp("modified_at")
     .defaultNow()
-    .$onUpdateFn(() => sql`NOW()`)
     .notNull(),
 });
 

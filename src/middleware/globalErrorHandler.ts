@@ -8,7 +8,7 @@ export function globalErrorHandler(
   next: NextFunction
 ) {
   // TODO: Implement and use a logger middleware here
-  console.log("Error:", err.message);
+  console.log("Error:", err);
 
   const specifiedErrorInfo = getSpecifiedErrorInfo(
     err,

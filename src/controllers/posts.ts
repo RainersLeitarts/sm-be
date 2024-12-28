@@ -1,11 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  createCommentService,
   createPostService,
+  deleteCommentService,
   deletePostService,
   editPostService,
   getPostService,
   getPostsService,
   toggleLikeService,
+  updateCommentService,
 } from "../services/posts";
 
 export async function createPostController(
@@ -106,6 +109,61 @@ export async function toggleLikeController(
     res
       .status(likeId ? 201 : 200)
       .json({ status: "success", data: { likeId } });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function createCommentController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { id } = req.params;
+  const { textContent, parentId } = req.body;
+  const username = req.headers["x-username"] as string;
+
+  try {
+    await createCommentService(username, id, textContent, parentId);
+
+    res.status(201).json({ status: "success", message: "Comment created" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateCommentController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { commentId } = req.params;
+  const { textContent } = req.body;
+  const username = req.headers["x-username"] as string;
+
+  console.log(commentId);
+
+  try {
+    await updateCommentService(username, commentId, textContent);
+
+    res.status(200).json({ status: "success", message: "Comment updated" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteCommentController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { commentId } = req.params;
+  const username = req.headers["x-username"] as string;
+
+  try {
+    await deleteCommentService(username, commentId);
+
+    res.status(200).json({ status: "success", message: "Comment deleted" });
   } catch (error) {
     next(error);
   }

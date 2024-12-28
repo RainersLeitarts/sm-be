@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import db from "../db";
-import { likesTable, postsTable } from "../db/schema";
+import { commentsTable, likesTable, postsTable } from "../db/schema";
 
 export async function createPost({
   textContent,
@@ -72,4 +72,35 @@ export async function findLike(authorId: string, postId: string) {
 
 export async function deleteLike(likeId: string) {
   await db.delete(likesTable).where(eq(likesTable.id, likeId));
+}
+
+export async function createComment(
+  authorId: string,
+  postId: string,
+  textContent: string,
+  parentId?: string
+) {
+  await db
+    .insert(commentsTable)
+    .values({ authorId, postId, textContent, parentId });
+}
+
+export async function getComment(id: string) {
+  const res = await db
+    .select()
+    .from(commentsTable)
+    .where(eq(commentsTable.id, id));
+
+  return res?.[0];
+}
+
+export async function updateComment(id: string, textContent: string) {
+  await db
+    .update(commentsTable)
+    .set({ textContent })
+    .where(eq(commentsTable.id, id));
+}
+
+export async function deleteComment(id: string) {
+  await db.delete(commentsTable).where(eq(commentsTable.id, id));
 }
