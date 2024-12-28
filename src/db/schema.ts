@@ -1,5 +1,11 @@
 import { relations, sql } from "drizzle-orm";
-import { boolean, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  pgTable,
+  timestamp,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
   id: uuid().defaultRandom().primaryKey(),
@@ -12,6 +18,8 @@ export const usersTable = pgTable("users", {
 export const userRelations = relations(usersTable, ({ many }) => {
   return {
     posts: many(postsTable),
+    comments: many(commentsTable),
+    likes: many(likesTable),
   };
 });
 
@@ -33,6 +41,7 @@ export const postRelations = relations(postsTable, ({ one, many }) => {
       references: [usersTable.id],
     }),
     comments: many(commentsTable),
+    likes: many(likesTable),
   };
 });
 
@@ -46,7 +55,10 @@ export const commentsTable = pgTable("comments", {
     .notNull()
     .references(() => usersTable.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  modifiedAt: timestamp("modified_at").defaultNow().$onUpdateFn(() => sql`NOW()`).notNull(),
+  modifiedAt: timestamp("modified_at")
+    .defaultNow()
+    .$onUpdateFn(() => sql`NOW()`)
+    .notNull(),
 });
 
 export const commentsRelations = relations(commentsTable, ({ one }) => {
@@ -54,6 +66,38 @@ export const commentsRelations = relations(commentsTable, ({ one }) => {
     post: one(postsTable, {
       fields: [commentsTable.postId],
       references: [postsTable.id],
+    }),
+    author: one(usersTable, {
+      fields: [commentsTable.postId],
+      references: [usersTable.id],
+    }),
+  };
+});
+
+export const likesTable = pgTable("likes", {
+  id: uuid().defaultRandom().primaryKey(),
+  postId: uuid("post_id")
+    .notNull()
+    .references(() => postsTable.id),
+  authorId: uuid("author_id")
+    .notNull()
+    .references(() => usersTable.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  modifiedAt: timestamp("modified_at")
+    .defaultNow()
+    .$onUpdateFn(() => sql`NOW()`)
+    .notNull(),
+});
+
+export const likesRelations = relations(likesTable, ({ one }) => {
+  return {
+    post: one(postsTable, {
+      fields: [likesTable.postId],
+      references: [postsTable.id],
+    }),
+    author: one(usersTable, {
+      fields: [likesTable.postId],
+      references: [usersTable.id],
     }),
   };
 });

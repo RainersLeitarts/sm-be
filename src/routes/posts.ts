@@ -6,12 +6,14 @@ import {
   editPostController,
   getPostController,
   getPostsController,
+  toggleLikeController,
 } from "../controllers/posts";
 import { validateRequestData } from "../middleware/validateRequestData";
 import {
   deletePostSchema,
   editPostSchema,
   getPostSchema,
+  likePostSchema,
 } from "../validation/posts";
 
 const router = Router();
@@ -30,6 +32,12 @@ router.delete(
   verifyAccessToken,
   validateRequestData(deletePostSchema),
   deletePostController
+);
+router.post(
+  "/toggleLike/:id",
+  verifyAccessToken,
+  validateRequestData(likePostSchema),
+  toggleLikeController
 );
 
 export default router;

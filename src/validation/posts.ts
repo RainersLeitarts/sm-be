@@ -11,3 +11,7 @@ export const deletePostSchema = z.object({
 export const getPostSchema = z.object({
   id: z.string().uuid({message: "Invalid UUID"}),
 });
+
+export const likePostSchema = z.object({
+  id: z.string().uuid({message: "Invalid UUID"}),
+});

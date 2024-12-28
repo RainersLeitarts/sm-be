@@ -29,3 +29,12 @@ export async function findUserByUsername(username: string) {
 
   return res?.[0];
 }
+
+export async function findUserById(id: string) {
+  const res = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, id));
+
+  return res?.[0];
+}

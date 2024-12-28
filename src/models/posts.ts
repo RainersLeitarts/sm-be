@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import db from "../db";
-import { postsTable } from "../db/schema";
+import { likesTable, postsTable } from "../db/schema";
 
 export async function createPost({
   textContent,
@@ -48,4 +48,28 @@ export async function deletePost(id: string) {
   const res = await db.delete(postsTable).where(eq(postsTable.id, id));
 
   return res;
+}
+
+export async function likePost(authorId: string, postId: string) {
+  const res = await db
+    .insert(likesTable)
+    .values({ authorId, postId })
+    .returning({ id: likesTable.id });
+
+  return res?.[0].id;
+}
+
+export async function findLike(authorId: string, postId: string) {
+  const res = await db
+    .select()
+    .from(likesTable)
+    .where(
+      and(eq(likesTable.authorId, authorId), eq(likesTable.postId, postId))
+    );
+
+  return res?.[0];
+}
+
+export async function deleteLike(likeId: string) {
+  await db.delete(likesTable).where(eq(likesTable.id, likeId));
 }
