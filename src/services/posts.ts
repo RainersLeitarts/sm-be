@@ -15,6 +15,7 @@ import {
   updatePost,
 } from "../models/posts";
 import { findUserById, findUserByUsername } from "../models/users";
+import { CommentsMap, MappedComment } from "../types/posts";
 
 export async function createPostService(
   authorUsername: string,
@@ -140,7 +141,31 @@ export async function getPostCommentsService(postId: string) {
 
   const comments = await getPostComments(post.id);
 
-  return comments;
+  const commentsMap: CommentsMap = new Map();
+
+  comments.forEach((comment) => {
+    (comment as MappedComment).children = [];
+    commentsMap.set(comment.id, comment as MappedComment);
+  });
+
+  const commentsTree: MappedComment[] = [];
+
+  for (const [_, comment] of commentsMap) {
+    if (!comment.parentId) {
+      commentsTree.push(comment);
+      continue;
+    }
+
+    const parent = commentsMap.get(comment.parentId);
+
+    if (!parent) {
+      continue;
+    }
+
+    parent.children.push(comment);
+  }
+
+  return commentsTree;
 }
 
 export async function updateCommentService(
