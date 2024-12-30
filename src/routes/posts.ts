@@ -20,13 +20,14 @@ import {
   editPostSchema,
   getPostCommentsSchema,
   getPostSchema,
+  getPostsSchema,
   likePostSchema,
   updateCommentSchema,
 } from "../validation/posts";
 
 const router = Router();
 
-router.get("/", getPostsController);
+router.get("/", validateRequestData(getPostsSchema), getPostsController);
 router.get("/:id", validateRequestData(getPostSchema), getPostController);
 router.post("/create", verifyAccessToken, createPostController);
 router.patch(

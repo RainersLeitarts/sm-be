@@ -70,7 +70,13 @@ export async function getPostsController(
   next: NextFunction
 ) {
   try {
-    const posts = await getPostsService();
+    const { after, limit } = req.query;
+
+    const posts = await getPostsService(
+      after as string,
+      parseInt(limit as string)
+    );
+
 
     res.status(200).json({ status: "success", data: posts });
   } catch (error) {
@@ -139,14 +145,13 @@ export async function getPostCommentsController(
   const { postId } = req.params;
 
   try {
-    const comments = await getPostCommentsService(postId)
+    const comments = await getPostCommentsService(postId);
 
     res.status(201).json({ status: "success", data: comments });
   } catch (error) {
     next(error);
   }
 }
-
 
 export async function updateCommentController(
   req: Request,

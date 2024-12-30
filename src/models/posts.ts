@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, asc, desc, eq, gt } from "drizzle-orm";
 import db from "../db";
 import { commentsTable, likesTable, postsTable } from "../db/schema";
 
@@ -17,8 +17,10 @@ export async function createPost({
   await db.insert(postsTable).values(post);
 }
 
-export async function getPosts() {
+export async function getPosts(after: string, limit: number) {
   const res = await db.query.postsTable.findMany({
+    where: gt(postsTable.createdAt, new Date(after)),
+    limit,
     with: {
       author: {
         columns: {
@@ -26,6 +28,7 @@ export async function getPosts() {
         },
       },
     },
+    orderBy: [desc(postsTable.createdAt)],
   });
   return res;
 }

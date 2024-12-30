@@ -14,7 +14,7 @@ import {
   updateComment,
   updatePost,
 } from "../models/posts";
-import { findUserById, findUserByUsername } from "../models/users";
+import { findUserByUsername } from "../models/users";
 import { CommentsMap, MappedComment } from "../types/posts";
 
 export async function createPostService(
@@ -30,8 +30,8 @@ export async function createPostService(
   await createPost({ textContent, authorId: user.id });
 }
 
-export async function getPostsService() {
-  return await getPosts();
+export async function getPostsService(after: string, limit: number) {
+  return await getPosts(after, limit);
 }
 
 export async function getPostService(id: string) {

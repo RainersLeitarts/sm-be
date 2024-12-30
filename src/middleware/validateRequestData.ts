@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 export function validateRequestData(schema: any) {
   return function (req: Request, res: Response, next: NextFunction) {
     try {
-      schema.parse({ ...req.body, ...req.params });
+      schema.parse({ ...req.body, ...req.params, ...req.query });
       next();
     } catch (error) {
       next(error);
