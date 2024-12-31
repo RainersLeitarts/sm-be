@@ -69,14 +69,14 @@ export async function getPostsController(
   res: Response,
   next: NextFunction
 ) {
+  const { after, limit } = req.query;
+  const DEFAULT_LIMIT = 10;
+
   try {
-    const { after, limit } = req.query;
-
     const posts = await getPostsService(
-      after as string,
-      parseInt(limit as string)
+      parseInt(limit as string) || DEFAULT_LIMIT,
+      after as string
     );
-
 
     res.status(200).json({ status: "success", data: posts });
   } catch (error) {

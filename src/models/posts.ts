@@ -17,9 +17,9 @@ export async function createPost({
   await db.insert(postsTable).values(post);
 }
 
-export async function getPosts(after: string, limit: number) {
+export async function getPosts(limit: number, after?: string) {
   const res = await db.query.postsTable.findMany({
-    where: gt(postsTable.createdAt, new Date(after)),
+    where: after ? gt(postsTable.createdAt, new Date(after)) : undefined,
     limit,
     with: {
       author: {

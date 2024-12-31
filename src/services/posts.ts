@@ -30,8 +30,8 @@ export async function createPostService(
   await createPost({ textContent, authorId: user.id });
 }
 
-export async function getPostsService(after: string, limit: number) {
-  return await getPosts(after, limit);
+export async function getPostsService(limit: number, after?: string) {
+  return await getPosts(limit, after);
 }
 
 export async function getPostService(id: string) {
