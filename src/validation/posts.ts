@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const getPostsSchema = z.object({
-  after: z
+  before: z
     .string()
     .refine(
       (value) => {
