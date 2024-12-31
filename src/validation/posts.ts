@@ -24,7 +24,7 @@ export const getPostsSchema = z.object({
     .transform((value) => Number(value))
     .refine(
       (value) => {
-        return value > 1;
+        return value >= 1;
       },
       { message: "Minimum limit is 1" }
     )
