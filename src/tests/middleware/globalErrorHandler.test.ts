@@ -23,7 +23,7 @@ describe("Global error handling middleware", () => {
     );
 
     app.post(
-      "/api/posts/create",
+      "/api/posts/update",
       (req: Request, res: Response, next: NextFunction) => {
         const error = new Error(PostErrors.POST_NOT_OWNED_BY_USER);
         next(error);
@@ -48,17 +48,19 @@ describe("Global error handling middleware", () => {
       AuthErrorInfo[AuthErrors.INCORRECT_PASSWORD].code
     );
     expect(response.body).toEqual({
+      status: "fail",
       message: AuthErrorInfo[AuthErrors.INCORRECT_PASSWORD].message,
     });
   });
 
   it("Should handle different specified errors, for example, POST_NOT_OWNED_BY_USER", async () => {
-    const response = await request(app).post("/api/posts/create");
+    const response = await request(app).post("/api/posts/update");
 
     expect(response.status).toBe(
       PostErrorInfo[PostErrors.POST_NOT_OWNED_BY_USER].code
     );
     expect(response.body).toEqual({
+      status: "fail",
       message: PostErrorInfo[PostErrors.POST_NOT_OWNED_BY_USER].message,
     });
   });
@@ -68,6 +70,7 @@ describe("Global error handling middleware", () => {
 
     expect(response.status).toBe(500);
     expect(response.body).toEqual({
+      status: "error",
       message: "Unspecified error",
     });
   });
