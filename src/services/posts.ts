@@ -31,7 +31,6 @@ export async function createPostService(
 }
 
 export async function getPostsService(limit: number, before?: string) {
-  console.log("after:", before);
   const posts = await getPosts(limit, before);
 
   const next = posts.length > 0 ? posts[posts.length - 1].createdAt : null;

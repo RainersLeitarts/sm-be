@@ -32,7 +32,10 @@ export const postsTable = pgTable("posts", {
     .references(() => usersTable.id),
   isEdited: boolean("is_edited").default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  modifiedAt: timestamp("modified_at").defaultNow().notNull(),
+  modifiedAt: timestamp("modified_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdateFn(() => new Date()),
 });
 
 export const postRelations = relations(postsTable, ({ one, many }) => {
@@ -61,7 +64,8 @@ export const commentsTable = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     modifiedAt: timestamp("modified_at")
       .defaultNow()
-      .notNull(),
+      .notNull()
+      .$onUpdateFn(() => new Date()),
   },
   (table) => {
     return {
@@ -99,9 +103,7 @@ export const likesTable = pgTable("likes", {
     .notNull()
     .references(() => usersTable.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  modifiedAt: timestamp("modified_at")
-    .defaultNow()
-    .notNull(),
+  modifiedAt: timestamp("modified_at").defaultNow().notNull(),
 });
 
 export const likesRelations = relations(likesTable, ({ one }) => {

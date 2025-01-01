@@ -1,7 +1,6 @@
 #TODO
 
 - Think about pagination for comments
-- Correcrly update updatedAt value for posts, comments and user
 - Send tokens in auth headers, maybe
 - Make the findXbyX models optionally throw an error if results are not found
   to avoid having to check results in services
