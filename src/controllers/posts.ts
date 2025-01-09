@@ -11,6 +11,7 @@ import {
   toggleLikeService,
   updateCommentService,
 } from "../services/posts";
+import path from "path";
 
 export async function createPostController(
   req: Request,
@@ -19,9 +20,11 @@ export async function createPostController(
 ) {
   try {
     const { textContent } = req.body;
+    console.log(req.file);
+    console.log(req.files);
     const username = req.headers["x-username"] as string;
 
-    await createPostService(username, textContent);
+    //await createPostService(username, textContent);
 
     res.status(201).json({ message: "Post created" });
   } catch (error) {
