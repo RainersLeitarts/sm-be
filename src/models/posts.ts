@@ -14,7 +14,12 @@ export async function createPost({
     authorId,
   };
 
-  await db.insert(postsTable).values(post);
+  const res = await db
+    .insert(postsTable)
+    .values(post)
+    .returning({ id: postsTable.id });
+
+  return res?.[0];
 }
 
 export async function getPosts(limit: number, before?: string) {
@@ -27,6 +32,11 @@ export async function getPosts(limit: number, before?: string) {
           username: true,
         },
       },
+      media: {
+        columns: {
+          publicUrl: true,
+        },
+      },
     },
     orderBy: [desc(postsTable.createdAt)],
   });
@@ -34,8 +44,23 @@ export async function getPosts(limit: number, before?: string) {
 }
 
 export async function getPostById(id: string) {
-  const res = await db.select().from(postsTable).where(eq(postsTable.id, id));
-  return res?.[0];
+  const res = await db.query.postsTable.findFirst({
+    where: eq(postsTable.id, id),
+    with: {
+      author: {
+        columns: {
+          username: true,
+        },
+      },
+      media: {
+        columns: {
+          publicUrl: true,
+        },
+      },
+    },
+  });
+
+  return res;
 }
 
 export async function updatePost(id: string, textContent: string) {

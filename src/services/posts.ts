@@ -1,4 +1,6 @@
+import { mediaTable } from "../db/schema";
 import { PostErrors } from "../middleware/globalErrorHandler";
+import { createMedia } from "../models/media";
 import {
   createComment,
   createPost,
@@ -15,11 +17,13 @@ import {
   updatePost,
 } from "../models/posts";
 import { findUserByUsername } from "../models/users";
+import { PostMedia } from "../types/media";
 import { CommentsMap, MappedComment } from "../types/posts";
 
 export async function createPostService(
   authorUsername: string,
-  textContent: string
+  textContent: string,
+  media?: PostMedia[]
 ) {
   const user = await findUserByUsername(authorUsername);
 
@@ -27,7 +31,20 @@ export async function createPostService(
     throw new Error("USER_NOT_FOUND");
   }
 
-  await createPost({ textContent, authorId: user.id });
+  const { id: postId } = await createPost({ textContent, authorId: user.id });
+
+  if (media) {
+    const mappedMedia: (typeof mediaTable.$inferInsert)[] = media.map(
+      (item) => {
+        return {
+          postId,
+          ...item,
+        };
+      }
+    );
+
+    await createMedia(mappedMedia);
+  }
 }
 
 export async function getPostsService(limit: number, before?: string) {

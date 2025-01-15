@@ -11,7 +11,7 @@ import {
   toggleLikeService,
   updateCommentService,
 } from "../services/posts";
-import path from "path";
+import { PostMedia } from "../types/media";
 
 export async function createPostController(
   req: Request,
@@ -20,11 +20,19 @@ export async function createPostController(
 ) {
   try {
     const { textContent } = req.body;
-    console.log(req.file);
-    console.log(req.files);
     const username = req.headers["x-username"] as string;
+    const files = req.files;
 
-    //await createPostService(username, textContent);
+    const media: PostMedia[] = (files as Express.MulterS3.File[])?.map(
+      (file) => {
+        return {
+          mimeType: file.mimetype,
+          publicUrl: process.env.R2_PUBLIC_BUCKET_URL + "/" + file.key,
+        };
+      }
+    );
+
+    await createPostService(username, textContent, media);
 
     res.status(201).json({ message: "Post created" });
   } catch (error) {

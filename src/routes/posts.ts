@@ -24,13 +24,13 @@ import {
   likePostSchema,
   updateCommentSchema,
 } from "../validation/posts";
-import multer from "../middleware/multerSetup"
+import multer from "../middleware/multer";
 
 const router = Router();
 
 router.get("/", validateRequestData(getPostsSchema), getPostsController);
 router.get("/:id", validateRequestData(getPostSchema), getPostController);
-router.post("/create", verifyAccessToken, multer.single("file"), createPostController);
+router.post("/create", verifyAccessToken, multer, createPostController);
 router.patch(
   "/edit/:id",
   verifyAccessToken,

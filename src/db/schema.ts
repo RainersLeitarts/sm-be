@@ -40,12 +40,32 @@ export const postsTable = pgTable("posts", {
 
 export const postRelations = relations(postsTable, ({ one, many }) => {
   return {
+    media: many(mediaTable),
     author: one(usersTable, {
       fields: [postsTable.authorId],
       references: [usersTable.id],
     }),
     comments: many(commentsTable),
     likes: many(likesTable),
+  };
+});
+
+export const mediaTable = pgTable("media", {
+  id: uuid().defaultRandom().primaryKey(),
+  publicUrl: varchar({ length: 200 }).notNull(),
+  mimeType: varchar({ length: 30 }),
+  postId: uuid("post_id")
+    .notNull()
+    .references(() => postsTable.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const mediaRelations = relations(mediaTable, ({ one }) => {
+  return {
+    post: one(postsTable, {
+      fields: [mediaTable.postId],
+      references: [postsTable.id],
+    }),
   };
 });
 
