@@ -29,7 +29,7 @@ export const postsTable = pgTable("posts", {
   textContent: varchar({ length: 1000 }),
   authorId: uuid("author_id")
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => usersTable.id, { onDelete: "cascade" }),
   isEdited: boolean("is_edited").default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   modifiedAt: timestamp("modified_at")
@@ -79,7 +79,7 @@ export const commentsTable = pgTable(
       .references(() => postsTable.id, { onDelete: "cascade" }),
     authorId: uuid("author_id")
       .notNull()
-      .references(() => usersTable.id),
+      .references(() => usersTable.id, { onDelete: "cascade" }),
     parentId: uuid("parent_id"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     modifiedAt: timestamp("modified_at")
@@ -121,7 +121,7 @@ export const likesTable = pgTable("likes", {
     .references(() => postsTable.id, { onDelete: "cascade" }),
   authorId: uuid("author_id")
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => usersTable.id, {onDelete: "cascade"}),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   modifiedAt: timestamp("modified_at").defaultNow().notNull(),
 });
