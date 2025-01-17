@@ -33,7 +33,7 @@ export async function createPostService(
 
   const { id: postId } = await createPost({ textContent, authorId: user.id });
 
-  if (media) {
+  if (media && media?.length > 0) {
     const mappedMedia: (typeof mediaTable.$inferInsert)[] = media.map(
       (item) => {
         return {

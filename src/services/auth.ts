@@ -73,6 +73,10 @@ export async function refreshTokenService(reqRefreshToken: string) {
 
   const user = await findUserByUsername(JWTData.username);
 
+  if (!user) {
+    throw new Error(AuthErrors.USERNAME_NOT_FOUND);
+  }
+
   if (user.refreshToken !== reqRefreshToken) {
     throw new Error(AuthErrors.INVALID_REFRESH_TOKEN);
   }
@@ -94,16 +98,16 @@ export async function logoutService(reqRefreshToken: string) {
     throw new Error(AuthErrors.INVALID_REFRESH_TOKEN);
   }
 
-  const username = (isValid as JwtPayload & TokenPayload).username
+  const username = (isValid as JwtPayload & TokenPayload).username;
   const user = await findUserByUsername(username);
 
-  if(!user){
-    throw new Error(AuthErrors.USERNAME_NOT_FOUND)
+  if (!user) {
+    throw new Error(AuthErrors.USERNAME_NOT_FOUND);
   }
 
   if (user.refreshToken !== reqRefreshToken) {
     throw new Error(AuthErrors.INVALID_REFRESH_TOKEN);
   }
 
-  await modifyRefreshToken(user.email, null)
+  await modifyRefreshToken(user.email, null);
 }
