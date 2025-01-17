@@ -28,4 +28,4 @@ export default multer({
     acl: "public-read",
     contentDisposition: "attachment",
   }),
-}).array("file");
+}).array("file[]");
